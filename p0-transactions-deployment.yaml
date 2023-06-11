@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: p0-transactions-deployment
+  namespace: p0-namespace
+  labels:
+    app: p0-transactions
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: p0-transactions
+  template:
+    metadata:
+      labels:
+        app: p0-transactions
+    spec:
+      volumes:
+        - name: mongodb-data
+          persistentVolumeClaim:
+            claimName: mongodb-pvc
+      containers:
+        - name: p0-transactions
+          image: localhost:5000/p0-transactions:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+            - containerPort: 8443
+          volumeMounts:
+            - name: mongodb-data
+              mountPath: /data/db
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 200m
+            requests:
+              memory: 128Mi
+              cpu: 10m
+          env:
+            - name: MONGO_HOSTS
+              valueFrom:
+                configMapKeyRef:
+                  name: mongodb-configmap
+                  key: database_url
+            - name: MONGODB_ADMINUSERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: mongo-root-username
+            - name: MONGODB_ADMINPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: mongo-root-password
+            - name: APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: p0-auth-secret
+                  key: p0-auth-app-secret
+            - name: MONGO_PORT
+              value: "27017"
+            - name: NODE_ENV
+              value: "prod"
+            - name: PORT
+              value: "8003"
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: p0-transactions-service
+  namespace: p0-namespace
+  labels:
+    name: p0-transactions
+spec:
+  selector:
+    app: p0-transactions
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8003
+    - name: https
+      port: 8443
+      targetPort: 8003
+  type: ClusterIP
