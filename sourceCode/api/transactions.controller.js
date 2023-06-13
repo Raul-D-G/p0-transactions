@@ -32,6 +32,12 @@ module.exports = {
           message: "Pentru acest transport este o tranzactie in curs",
         });
       }
+      if (!results) {
+        return res.json({
+          success: 0,
+          message: "Inregistrarea nu afost gasita",
+        });
+      }
       return res.json({
         succesc: 1,
         message: "Tranzacție ștearsă",

@@ -28,9 +28,11 @@ class TransactionRepository {
     }
   }
 
-  async DeleteTransaction(id) {
+  async DeleteTransaction(transportID) {
     try {
-      const result = await TranzactionModel.deleteOne({ _id: id });
+      const result = await TranzactionModel.deleteOne({
+        idTransport: transportID,
+      });
       return result.deletedCount;
     } catch (error) {
       throw error;

@@ -29,9 +29,9 @@ module.exports = {
       });
   },
 
-  deleteTransaction: (transactionID, callBack) => {
+  deleteTransaction: (transportID, callBack) => {
     repository
-      .DeleteTransaction(transactionID)
+      .DeleteTransaction(transportID)
       .then((deletedCount) => {
         callBack(null, deletedCount > 0);
       })

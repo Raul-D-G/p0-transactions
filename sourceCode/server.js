@@ -19,6 +19,7 @@ const StartServer = async () => {
     cors: {
       origin: "*",
     },
+    path: "/ws/",
   });
 
   io.on("connection", (socket) => {
@@ -32,7 +33,7 @@ const StartServer = async () => {
       const data = {
         idExpeditor: msg.idExpeditor,
         idTransportator: msg.idTransportator,
-        transactions: msg.transactions,
+        transport: msg.transport,
       };
       let socketId = users[data.idExpeditor];
       socket.to(socketId).emit("ofertaTransport", data);
