@@ -4,6 +4,14 @@ const { TranzactionModel } = require("../models");
 class TransactionRepository {
   async CreateTransaction({ idTransport, idTransportator, idExpeditor }) {
     try {
+      const existingTransaction = await this.GetTranzactieByTransport(
+        idTransport
+      );
+
+      if (existingTransaction) {
+        throw new Error("Pentru acest transport este o tranzactie in curs");
+      }
+
       const transactions = new TranzactionModel({
         idTransport,
         idTransportator,
@@ -15,6 +23,14 @@ class TransactionRepository {
 
       // Returnăm ID-ul transactionsului salvat
       return savedTransaction._id;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async GetTranzactieByTransport(idTransport) {
+    try {
+      return await TranzactionModel.findOne({ idTransport: idTransport });
     } catch (error) {
       throw error;
     }

@@ -23,10 +23,9 @@ const StartServer = async () => {
   });
 
   io.on("connection", (socket) => {
-    console.log("User connected", socket.id);
-
     socket.on("setSocketId", (idUser) => {
       users[idUser] = socket.id;
+      console.log(`User ${idUser} setSocketId ${socket.id}`);
     });
 
     socket.on("dorescTransport", (msg) => {
@@ -35,19 +34,19 @@ const StartServer = async () => {
         idTransportator: msg.idTransportator,
         transport: msg.transport,
       };
-      let socketId = users[data.idExpeditor];
+      const socketId = users[data.idExpeditor];
       socket.to(socketId).emit("ofertaTransport", data);
     });
 
     socket.on("respingereTransportator", (resping) => {
-      idTransportator = resping.idTransportator;
-      let socketId = users[idTransportator];
+      const idTransportator = resping.idTransportator;
+      const socketId = users[idTransportator];
       socket.to(socketId).emit("respingere", resping);
     });
 
     socket.on("acceptaTrasnport", (accepta) => {
-      idTransportator = accepta.idTransportator;
-      let socketId = users[idTransportator];
+      const idTransportator = accepta.idTransportator;
+      const socketId = users[idTransportator];
       socket.to(socketId).emit("acceptare", accepta);
     });
 
